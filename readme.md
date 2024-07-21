@@ -39,3 +39,15 @@ The functionality is currently limited to the needs of Avalonia project. PRs are
 The list of known problems so far:
 - `netstandard2.0` is assumed to be the only .NET Standard that fits all frameworks
 - package parsing/saving is very naive
+
+
+You can add the `Numerge.MSBuild` nuget package to use MSBuild task. Add this to your project file:
+```xml
+<Target Name="Numerge" AfterTargets="Pack">
+    <NumergeTask />
+</Target>
+```
+
+`NumergeTask` also has the following properties:
+- `NumergeConfigFile` - specifies the path to the config file (default: `numerge.config.json` in current project directory)
+- `ClearIntermediatePackages` - specifies if intermediate packages should be deleted (default: `true`) 

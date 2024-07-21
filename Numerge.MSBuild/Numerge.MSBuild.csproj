@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>12</LangVersion>
+        <Nullable>enable</Nullable>
+
+        <GenerateDependencyFile>true</GenerateDependencyFile>
+        <DevelopmentDependency>true</DevelopmentDependency>
+
+        <Version>0.1.0</Version>
+        <Title>Numerge.MSBuild</Title>
+        <Authors>kekekekz, SKProCH</Authors>
+        <Description>Provides the numerge capabilities in MSBuild task form</Description>
+        <PackageProjectUrl>https://github.com/AvaloniaUtils/Numerge</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/AvaloniaUtils/Numerge/blob/master/license.md</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/AvaloniaUtils/Numerge</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Numerge\Numerge.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.10.4"
+                          PrivateAssets="all"
+                          ExcludeAssets="Runtime"/>
+    </ItemGroup>
+
+    <!-- This target adds the generated deps.json file to our package output -->
+    <Target
+            Name="AddBuildDependencyFileToBuiltProjectOutputGroupOutput"
+            BeforeTargets="BuiltProjectOutputGroup"
+            Condition=" '$(GenerateDependencyFile)' == 'true'">
+
+        <ItemGroup>
+            <BuiltProjectOutputGroupOutput
+                    Include="$(ProjectDepsFilePath)"
+                    TargetPath="$(ProjectDepsFileName)"
+                    FinalOutputPath="$(ProjectDepsFilePath)"/>
+        </ItemGroup>
+    </Target>
+
+</Project>
