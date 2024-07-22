@@ -8,8 +8,10 @@
         <GenerateDependencyFile>true</GenerateDependencyFile>
         <DevelopmentDependency>true</DevelopmentDependency>
         <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
-        <Version>0.1.1</Version>
+        <IsPackable>true</IsPackable>
+        <Version>0.1.2</Version>
         <Title>Numerge.MSBuild</Title>
         <Authors>kekekekz, SKProCH</Authors>
         <Description>Provides the numerge capabilities in MSBuild task form</Description>
@@ -17,18 +19,27 @@
         <PackageLicenseUrl>https://github.com/AvaloniaUtils/Numerge/blob/master/license.md</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/AvaloniaUtils/Numerge</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageReleaseNotes>Embed the Numerge project into nupkg</PackageReleaseNotes>
+        <PackageReleaseNotes>Add props and targets file</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Numerge\Numerge.csproj"
                           PrivateAssets="all"/>
+        
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.10.4"
+                          PrivateAssets="all" ExcludeAssets="Runtime"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.10.4"
-                          PrivateAssets="all"
-                          ExcludeAssets="Runtime"/>
+        <!-- these lines pack the build props/targets files to the `build` folder in the generated package.
+            by convention, the .NET SDK will look for build\<Package Id>.props and build\<Package Id>.targets
+            for automatic inclusion in the build. -->
+        <Content Include="build\Numerge.MSBuild.props" PackagePath="build\" />
+        <Content Include="build\Numerge.MSBuild.targets" PackagePath="build\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="build\" />
     </ItemGroup>
 
     <!-- This target adds the generated deps.json file to our package output -->
