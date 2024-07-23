@@ -13,7 +13,7 @@
         <PackageId>Numerge.MSBuild</PackageId>
         <Title>Numerge.MSBuild</Title>
         <IsPackable>true</IsPackable>
-        <Version>0.1.5</Version>
+        <Version>0.1.6</Version>
         <Authors>kekekekz, SKProCH</Authors>
         <Description>Provides the numerge capabilities in MSBuild task form</Description>
         <PackageProjectUrl>https://github.com/AvaloniaUtils/Numerge</PackageProjectUrl>

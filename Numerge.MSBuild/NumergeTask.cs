@@ -9,9 +9,9 @@ namespace Numerge.MSBuild;
 
 public class NumergeTask : Task
 {
-    public string? NumergeConfigFile { get; set; }
+    public string? ConfigFile { get; set; }
 
-    public bool NumergeClearIntermediatePackages { get; set; }
+    public bool ClearIntermediatePackages { get; set; }
 
     [Required] public string PackageVersion { get; set; } = null!;
     [Required] public string Configuration { get; set; } = null!;
@@ -21,7 +21,7 @@ public class NumergeTask : Task
     {
         Log.LogMessage(MessageImportance.Normal, "Starting Numerge task execution");
 
-        var numergeConfigFile = NumergeConfigFile ?? "numerge.config.json";
+        var numergeConfigFile = ConfigFile ?? "numerge.config.json";
         var projectDirectory = ProjectDirectory!;
         Log.LogMessage(MessageImportance.Normal, $"Project directory: {projectDirectory}");
 
@@ -53,11 +53,11 @@ public class NumergeTask : Task
         {
             Log.LogMessage(MessageImportance.Normal, "Moving .nupkg files to temporary directory");
             MovePackagesToTempDirectory(solutionDirectory, "nupkg", Configuration, tempPath, PackageVersion,
-                NumergeClearIntermediatePackages);
+                ClearIntermediatePackages);
 
             Log.LogMessage(MessageImportance.Normal, "Moving .snupkg files to temporary directory");
             MovePackagesToTempDirectory(solutionDirectory, "snupkg", Configuration, tempPath, PackageVersion,
-                NumergeClearIntermediatePackages);
+                ClearIntermediatePackages);
 
             var outputDirectory = Path.Combine(projectDirectory, "bin", Configuration);
             Log.LogMessage(MessageImportance.Normal, $"Output directory: {outputDirectory}");

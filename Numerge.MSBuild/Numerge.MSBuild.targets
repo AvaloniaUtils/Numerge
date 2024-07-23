@@ -11,7 +11,7 @@
     
     <Target Name="Numerge" AfterTargets="Pack">
         <NumergeTask PackageVersion="$(PackageVersion)" Configuration="$(Configuration)"
-                     NumergeClearIntermediatePackages="@(NumergeClearIntermediatePackages)" NumergeConfigFile="@(NumergeConfigFile)"
-                     ProjectDirectory="@(_Numerge_MSBuild_ProjectDirectory)"/>
+                     ClearIntermediatePackages="$(NumergeClearIntermediatePackages)" ConfigFile="$(NumergeConfigFile)"
+                     ProjectDirectory="$(_Numerge_MSBuild_ProjectDirectory)"/>
     </Target>
 </Project>
