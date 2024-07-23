@@ -41,13 +41,9 @@ The list of known problems so far:
 - package parsing/saving is very naive
 
 
-You can add the `Numerge.MSBuild` nuget package to use MSBuild task. Add this to your project file:
-```xml
-<Target Name="Numerge" AfterTargets="Pack">
-    <NumergeTask />
-</Target>
-```
+## Numerge.MSBuild
+You can add the `Numerge.MSBuild` nuget package to your project to automatically apply MSBuild task.
 
 `NumergeTask` also has the following properties:
 - `NumergeConfigFile` - specifies the path to the config file (default: `numerge.config.json` in current project directory)
-- `ClearIntermediatePackages` - specifies if intermediate packages should be deleted (default: `true`) 
+- `NumergeClearIntermediatePackages` - specifies if intermediate packages should be deleted (default: `true`) 

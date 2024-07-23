@@ -10,46 +10,49 @@ namespace Numerge.MSBuild;
 public class NumergeTask : Task
 {
     public string? NumergeConfigFile { get; set; }
-    
-    public bool ClearIntermediatePackages { get; set; }
-    
-    [Required]
-    public string PackageVersion { get; set; } = null!;
-    
-    [Required]
-    public string Configuration { get; set; } = null!;
+
+    public bool NumergeClearIntermediatePackages { get; set; }
+
+    [Required] public string PackageVersion { get; set; } = null!;
+    [Required] public string Configuration { get; set; } = null!;
+    [Required] public string ProjectDirectory { get; set; } = null!;
 
     public override bool Execute()
     {
         var numergeConfigFile = NumergeConfigFile ?? "numerge.config.json";
-        var projectDirectory = Path.GetDirectoryName(BuildEngine.ProjectFileOfTaskNode)!;
+        var projectDirectory = ProjectDirectory!;
         if (!Path.IsPathRooted(numergeConfigFile))
         {
-            Log.LogMessage(MessageImportance.Low, "Numerge config path ({Path}) isn't rooted, evaluating as relative to current project file ({Project})", numergeConfigFile, projectDirectory);
+            Log.LogMessage(MessageImportance.Low,
+                "Numerge config path ({0}) isn't rooted, evaluating as relative to current project file ({1})",
+                numergeConfigFile, projectDirectory);
             numergeConfigFile = Path.Combine(projectDirectory, numergeConfigFile);
         }
-        
-        Log.LogMessage(MessageImportance.Low, "Target numerge config file: {File}", numergeConfigFile);
+
+        Log.LogMessage(MessageImportance.Low, "Target numerge config file: {0}", numergeConfigFile);
         if (!File.Exists(numergeConfigFile))
         {
-            Log.LogError("Numerge config file doesn't exists at {Path}", numergeConfigFile);
+            Log.LogError("Numerge config file doesn't exists at {0}", numergeConfigFile);
             return false;
         }
-        
+
         var config = MergeConfiguration.LoadFile(numergeConfigFile);
 
         var solutionDirectory = FindSolutionDirectory(projectDirectory);
-        Log.LogMessage(MessageImportance.Low, "Finding packages in {Path}", solutionDirectory);
+        Log.LogMessage(MessageImportance.Low, "Finding packages in {0}", solutionDirectory);
 
         var tempPath = Path.GetTempPath() + Guid.NewGuid();
         Directory.CreateDirectory(tempPath);
 
         try
         {
-            MovePackagesToTempDirectory(solutionDirectory, "nupkg", Configuration, tempPath, PackageVersion, ClearIntermediatePackages);
-            MovePackagesToTempDirectory(solutionDirectory, "snupkg", Configuration, tempPath, PackageVersion, ClearIntermediatePackages);
+            MovePackagesToTempDirectory(solutionDirectory, "nupkg", Configuration, tempPath, PackageVersion,
+                NumergeClearIntermediatePackages);
+            MovePackagesToTempDirectory(solutionDirectory, "snupkg", Configuration, tempPath, PackageVersion,
+                NumergeClearIntermediatePackages);
 
-            return NugetPackageMerger.Merge(tempPath, Path.Combine(projectDirectory, "bin", Configuration), config, new NumergeMSBuildLogger(Log));
+            return NugetPackageMerger.Merge(tempPath, Path.Combine(projectDirectory, "bin", Configuration), config,
+                new NumergeMSBuildLogger(Log));
         }
         finally
         {
@@ -77,7 +80,7 @@ public class NumergeTask : Task
             }
         }
     }
-    
+
     private string FindSolutionDirectory(string projectDirectory)
     {
         while (!string.IsNullOrEmpty(projectDirectory))
@@ -87,6 +90,7 @@ public class NumergeTask : Task
             {
                 return projectDirectory;
             }
+
             projectDirectory = Path.GetDirectoryName(projectDirectory)!;
         }
 
