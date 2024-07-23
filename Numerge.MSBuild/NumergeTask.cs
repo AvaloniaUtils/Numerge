@@ -19,43 +19,72 @@ public class NumergeTask : Task
 
     public override bool Execute()
     {
+        Log.LogMessage(MessageImportance.Normal, "Starting Numerge task execution");
+
         var numergeConfigFile = NumergeConfigFile ?? "numerge.config.json";
         var projectDirectory = ProjectDirectory!;
+        Log.LogMessage(MessageImportance.Normal, $"Project directory: {projectDirectory}");
+
         if (!Path.IsPathRooted(numergeConfigFile))
         {
-            Log.LogMessage(MessageImportance.Low,
-                "Numerge config path ({0}) isn't rooted, evaluating as relative to current project file ({1})",
-                numergeConfigFile, projectDirectory);
+            Log.LogMessage(MessageImportance.Normal,
+                $"Numerge config path ({numergeConfigFile}) isn't rooted, evaluating as relative to current project file ({projectDirectory})");
             numergeConfigFile = Path.Combine(projectDirectory, numergeConfigFile);
         }
 
-        Log.LogMessage(MessageImportance.Low, "Target numerge config file: {0}", numergeConfigFile);
+        Log.LogMessage(MessageImportance.Normal, $"Target numerge config file: {numergeConfigFile}");
         if (!File.Exists(numergeConfigFile))
         {
-            Log.LogError("Numerge config file doesn't exists at {0}", numergeConfigFile);
+            Log.LogError($"Numerge config file doesn't exist at {numergeConfigFile}");
             return false;
         }
 
+        Log.LogMessage(MessageImportance.Normal, "Loading Numerge configuration");
         var config = MergeConfiguration.LoadFile(numergeConfigFile);
 
         var solutionDirectory = FindSolutionDirectory(projectDirectory);
-        Log.LogMessage(MessageImportance.Low, "Finding packages in {0}", solutionDirectory);
+        Log.LogMessage(MessageImportance.Normal, $"Solution directory: {solutionDirectory}");
 
         var tempPath = Path.GetTempPath() + Guid.NewGuid();
+        Log.LogMessage(MessageImportance.Normal, $"Creating temporary directory: {tempPath}");
         Directory.CreateDirectory(tempPath);
 
         try
         {
+            Log.LogMessage(MessageImportance.Normal, "Moving .nupkg files to temporary directory");
             MovePackagesToTempDirectory(solutionDirectory, "nupkg", Configuration, tempPath, PackageVersion,
                 NumergeClearIntermediatePackages);
+
+            Log.LogMessage(MessageImportance.Normal, "Moving .snupkg files to temporary directory");
             MovePackagesToTempDirectory(solutionDirectory, "snupkg", Configuration, tempPath, PackageVersion,
                 NumergeClearIntermediatePackages);
 
-            return NugetPackageMerger.Merge(tempPath, Path.Combine(projectDirectory, "bin", Configuration), config,
-                new NumergeMSBuildLogger(Log));
+            var outputDirectory = Path.Combine(projectDirectory, "bin", Configuration);
+            Log.LogMessage(MessageImportance.Normal, $"Output directory: {outputDirectory}");
+
+            Log.LogMessage(MessageImportance.Normal, "Starting NuGet package merge process");
+            var mergeResult =
+                NugetPackageMerger.Merge(tempPath, outputDirectory, config, new NumergeMSBuildLogger(Log));
+
+            if (mergeResult)
+            {
+                Log.LogMessage(MessageImportance.High, "Numerge task completed successfully");
+            }
+            else
+            {
+                Log.LogError("Numerge task failed");
+            }
+
+            return mergeResult;
+        }
+        catch (Exception ex)
+        {
+            Log.LogErrorFromException(ex, true);
+            return false;
         }
         finally
         {
+            Log.LogMessage(MessageImportance.Normal, $"Cleaning up temporary directory: {tempPath}");
             Directory.Delete(tempPath, true);
         }
     }
