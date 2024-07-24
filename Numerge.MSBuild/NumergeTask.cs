@@ -93,8 +93,10 @@ public class NumergeTask : Task
     private void MovePackagesToTempDirectory(string solutionDirectory, string extension, string configuration,
         MergeConfiguration config, string destination, string version, bool move)
     {
-        var targetFileNames = config.Packages.SelectMany(contfiguration => contfiguration.Merge)
-            .Select(mergeConfiguration => $"{mergeConfiguration.Id}.{version}.{extension}")
+        var targetFileNames = config.Packages.SelectMany(x => x.Merge)
+            .Select(mergeConfiguration => mergeConfiguration.Id)
+            .Concat(config.Packages.Select(x => x.Id))
+            .Select(id => $"{id}.{version}.{extension}")
             .ToImmutableArray();
 
         var files = Directory.GetFiles(solutionDirectory, "*." + extension, SearchOption.AllDirectories)
