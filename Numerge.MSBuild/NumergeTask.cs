@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Microsoft.Build.Framework;
@@ -52,11 +53,11 @@ public class NumergeTask : Task
         try
         {
             Log.LogMessage(MessageImportance.Normal, "Moving .nupkg files to temporary directory");
-            MovePackagesToTempDirectory(solutionDirectory, "nupkg", Configuration, tempPath, PackageVersion,
+            MovePackagesToTempDirectory(solutionDirectory, "nupkg", Configuration, config, tempPath, PackageVersion,
                 ClearIntermediatePackages);
 
             Log.LogMessage(MessageImportance.Normal, "Moving .snupkg files to temporary directory");
-            MovePackagesToTempDirectory(solutionDirectory, "snupkg", Configuration, tempPath, PackageVersion,
+            MovePackagesToTempDirectory(solutionDirectory, "snupkg", Configuration, config, tempPath, PackageVersion,
                 ClearIntermediatePackages);
 
             var outputDirectory = Path.Combine(projectDirectory, "bin", Configuration);
@@ -90,12 +91,15 @@ public class NumergeTask : Task
     }
 
     private void MovePackagesToTempDirectory(string solutionDirectory, string extension, string configuration,
-        string destination,
-        string version, bool move)
+        MergeConfiguration config, string destination, string version, bool move)
     {
+        var targetFileNames = config.Packages.SelectMany(contfiguration => contfiguration.Merge)
+            .Select(mergeConfiguration => $"{mergeConfiguration.Id}.{version}.{extension}")
+            .ToImmutableArray();
+
         var files = Directory.GetFiles(solutionDirectory, "*." + extension, SearchOption.AllDirectories)
             .Where(s => s.Contains(configuration))
-            .Where(s => s.EndsWith($"{version}.{extension}"));
+            .Where(s => targetFileNames.Contains(Path.GetFileName(s)));
 
         foreach (var file in files)
         {
