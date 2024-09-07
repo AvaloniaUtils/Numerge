@@ -13,14 +13,14 @@
         <PackageId>Numerge.MSBuild</PackageId>
         <Title>Numerge.MSBuild</Title>
         <IsPackable>true</IsPackable>
-        <Version>0.1.10</Version>
+        <Version>0.1.11</Version>
         <Authors>kekekekz, SKProCH</Authors>
         <Description>Provides the numerge capabilities in MSBuild task form</Description>
         <PackageProjectUrl>https://github.com/AvaloniaUtils/Numerge</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/AvaloniaUtils/Numerge/blob/master/license.md</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/AvaloniaUtils/Numerge</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageReleaseNotes>Fix cannot access the file being used by another process</PackageReleaseNotes>
+        <PackageReleaseNotes>Add invoking dotnet pack for solution before actually numerging</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
