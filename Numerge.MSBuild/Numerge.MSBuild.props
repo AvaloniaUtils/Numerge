@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <NumergeSkip Condition="'$(NumergeSkip)' == ''">False</NumergeSkip>
         <NumergeClearIntermediatePackages Condition="'$(NumergeClearIntermediatePackages)' == ''">True</NumergeClearIntermediatePackages>
         <NumergeConfigFile Condition="'$(NumergeConfigFile)' == ''">numerge.config.json</NumergeConfigFile>
     </PropertyGroup>

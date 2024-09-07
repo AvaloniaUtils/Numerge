@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.Build.Framework;
@@ -46,10 +45,6 @@ public class NumergeTask : Task
 
         var solutionDirectory = FindSolutionDirectory(projectDirectory);
         Log.LogMessage(MessageImportance.Normal, $"Solution directory: {solutionDirectory}");
-
-        Log.LogMessage(MessageImportance.Normal, $"Starting dotnet pack to verify that all nupks are created at {solutionDirectory}");
-        Process.Start(new ProcessStartInfo("dotnet", "pack /p:NumergeSkip=True") { WorkingDirectory = solutionDirectory })
-            !.WaitForExit();
 
         var tempPath = Path.GetTempPath() + Guid.NewGuid();
         Log.LogMessage(MessageImportance.Normal, $"Creating temporary directory: {tempPath}");
